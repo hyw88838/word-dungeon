@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+<title>高考英语单词地牢</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+background:#0f172a;
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at top,#1e3a8a 0%,transparent 40%),
+linear-gradient(#0f172a,#111827);
+z-index:-1;
+}
+
+.container{
+max-width:520px;
+margin:auto;
+padding:14px;
+}
+
+.header{
+background:rgba(255,255,255,0.08);
+border-radius:24px;
+padding:20px;
+margin-bottom:16px;
+backdrop-filter:blur(10px);
+box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+
+.title{
+font-size:30px;
+font-weight:900;
+text-align:center;
+margin-bottom:18px;
+}
+
+.hp-box{
+margin-bottom:12px;
+}
+
+.hp-label{
+display:flex;
+justify-content:space-between;
+margin-bottom:6px;
+font-size:14px;
+}
+
+.hp-bar{
+height:14px;
+background:#1e293b;
+border-radius:999px;
+overflow:hidden;
+}
+
+.hp-inner{
+height:100%;
+background:linear-gradient(90deg,#22c55e,#10b981);
+transition:0.3s;
+}
+
+.enemy-inner{
+background:linear-gradient(90deg,#ef4444,#dc2626);
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin-top:16px;
+}
+
+.stat{
+background:rgba(255,255,255,0.06);
+border-radius:16px;
+padding:10px;
+text-align:center;
+}
+
+.stat-value{
+font-size:22px;
+font-weight:900;
+}
+
+.stat-label{
+font-size:12px;
+opacity:0.8;
+margin-top:4px;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+border-radius:28px;
+padding:24px 18px;
+backdrop-filter:blur(10px);
+box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+
+.enemy{
+text-align:center;
+margin-bottom:20px;
+}
+
+.enemy-icon{
+font-size:72px;
+animation:float 2s infinite ease-in-out;
+}
+
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-8px)}
+100%{transform:translateY(0)}
+}
+
+.enemy-name{
+font-size:24px;
+font-weight:900;
+margin-top:8px;
+}
+
+.word-box{
+text-align:center;
+margin-bottom:20px;
+}
+
+.word{
+font-size:42px;
+font-weight:900;
+margin-bottom:10px;
+}
+
+.phonetic{
+font-size:18px;
+opacity:0.8;
+}
+
+.question{
+font-size:18px;
+font-weight:700;
+text-align:center;
+margin-bottom:18px;
+}
+
+.options{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.option-btn{
+border:none;
+border-radius:18px;
+padding:16px;
+background:#1e293b;
+color:white;
+font-size:17px;
+font-weight:700;
+cursor:pointer;
+transition:0.2s;
+border:2px solid transparent;
+}
+
+.option-btn:active{
+transform:scale(0.98);
+}
+
+.correct{
+background:#14532d;
+border-color:#22c55e;
+}
+
+.wrong{
+background:#7f1d1d;
+border-color:#ef4444;
+}
+
+.controls{
+display:flex;
+gap:12px;
+margin-top:20px;
+}
+
+.control-btn{
+flex:1;
+border:none;
+border-radius:18px;
+padding:15px;
+font-size:16px;
+font-weight:800;
+cursor:pointer;
+}
+
+.primary{
+background:linear-gradient(135deg,#6366f1,#8b5cf6);
+color:white;
+}
+
+.secondary{
+background:#1e293b;
+color:white;
+}
+
+.combo{
+text-align:center;
+font-size:28px;
+font-weight:900;
+margin-bottom:15px;
+color:#facc15;
+min-height:40px;
+}
+
+.panel{
+margin-top:16px;
+background:rgba(255,255,255,0.08);
+padding:16px;
+border-radius:20px;
+}
+
+.panel-title{
+font-size:18px;
+font-weight:900;
+margin-bottom:10px;
+}
+
+.badge{
+display:inline-block;
+padding:8px 12px;
+background:#facc15;
+color:#111827;
+border-radius:999px;
+font-weight:800;
+margin:5px;
+font-size:13px;
+}
+
+.damage{
+position:fixed;
+left:50%;
+top:40%;
+transform:translateX(-50%);
+font-size:52px;
+font-weight:900;
+pointer-events:none;
+animation:damageFloat 1s forwards;
+}
+
+@keyframes damageFloat{
+0%{
+opacity:1;
+transform:translate(-50%,0);
+}
+100%{
+opacity:0;
+transform:translate(-50%,-80px);
+}
+}
+
+@media(max-width:480px){
+
+.word{
+font-size:34px;
+}
+
+.enemy-icon{
+font-size:60px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div class="title">
+⚔️ 高考英语单词地牢
+</div>
+
+<div class="hp-box">
+<div class="hp-label">
+<span>🧙 玩家生命</span>
+<span id="playerHpText">100 / 100</span>
+</div>
+
+<div class="hp-bar">
+<div class="hp-inner" id="playerHp"></div>
+</div>
+</div>
+
+<div class="hp-box">
+<div class="hp-label">
+<span>👹 怪物生命</span>
+<span id="enemyHpText">100 / 100</span>
+</div>
+
+<div class="hp-bar">
+<div class="hp-inner enemy-inner" id="enemyHp"></div>
+</div>
+</div>
+
+<div class="stats">
+
+<div class="stat">
+<div class="stat-value" id="score">0</div>
+<div class="stat-label">分数</div>
+</div>
+
+<div class="stat">
+<div class="stat-value" id="combo">0</div>
+<div class="stat-label">连击</div>
+</div>
+
+<div class="stat">
+<div class="stat-value" id="floor">1</div>
+<div class="stat-label">层数</div>
+</div>
+
+<div class="stat">
+<div class="stat-value" id="kills">0</div>
+<div class="stat-label">击杀</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="card" id="gameArea"></div>
+
+<div class="panel">
+<div class="panel-title">🏅 成就</div>
+<div id="badges"></div>
+</div>
+
+<div class="panel">
+<div class="panel-title">❌ 错词本</div>
+<div id="wrongWords"></div>
+</div>
+
+</div>
+
+<script>
+
+const words = [
+
+{word:"abandon",meaning:"放弃",phonetic:"/əˈbændən/"},
+{word:"ability",meaning:"能力",phonetic:"/əˈbɪləti/"},
+{word:"absorb",meaning:"吸收",phonetic:"/əbˈzɔːrb/"},
+{word:"adapt",meaning:"适应",phonetic:"/əˈdæpt/"},
+{word:"admire",meaning:"钦佩",phonetic:"/ədˈmaɪər/"},
+{word:"advance",meaning:"进步",phonetic:"/ədˈvæns/"},
+{word:"affect",meaning:"影响",phonetic:"/əˈfekt/"},
+{word:"ancient",meaning:"古代的",phonetic:"/ˈeɪnʃənt/"},
+{word:"approach",meaning:"接近",phonetic:"/əˈprəʊtʃ/"},
+{word:"challenge",meaning:"挑战",phonetic:"/ˈtʃælɪndʒ/"},
+{word:"combine",meaning:"结合",phonetic:"/kəmˈbaɪn/"},
+{word:"complex",meaning:"复杂的",phonetic:"/ˈkɒmpleks/"},
+{word:"confident",meaning:"自信的",phonetic:"/ˈkɒnfɪdənt/"},
+{word:"creative",meaning:"创造性的",phonetic:"/kriˈeɪtɪv/"},
+{word:"efficient",meaning:"高效的",phonetic:"/ɪˈfɪʃənt/"},
+{word:"essential",meaning:"必要的",phonetic:"/ɪˈsenʃl/"},
+{word:"evidence",meaning:"证据",phonetic:"/ˈevɪdəns/"},
+{word:"failure",meaning:"失败",phonetic:"/ˈfeɪljər/"},
+{word:"strategy",meaning:"策略",phonetic:"/ˈstrætədʒi/"},
+{word:"technology",meaning:"科技",phonetic:"/tekˈnɒlədʒi/"}
+
+];
+
+let player = {
+hp:100,
+maxHp:100,
+score:0,
+combo:0,
+floor:1,
+kills:0
+};
+
+let enemy = {
+hp:100,
+maxHp:100,
+name:"史莱姆单词兽",
+icon:"👾"
+};
+
+let currentWord;
+
+let wrongBook =
+JSON.parse(localStorage.getItem("wrongBook") || "[]");
+
+let achievements =
+JSON.parse(localStorage.getItem("achievements") || "[]");
+
+const gameArea =
+document.getElementById("gameArea");
+
+render();
+renderWrongWords();
+renderAchievements();
+
+function render(){
+
+updateBars();
+
+currentWord = getWord();
+
+const options =
+generateOptions(currentWord);
+
+gameArea.innerHTML = `
+
+<div class="enemy">
+
+<div class="enemy-icon">
+${enemy.icon}
+</div>
+
+<div class="enemy-name">
+${enemy.name}
+</div>
+
+</div>
+
+<div class="combo">
+${getComboText()}
+</div>
+
+<div class="word-box">
+
+<div class="word">
+${currentWord.word}
+</div>
+
+<div class="phonetic">
+${currentWord.phonetic}
+</div>
+
+</div>
+
+<div class="question">
+请选择正确中文意思
+</div>
+
+<div class="options">
+
+${options.map(o=>`
+
+<button class="option-btn"
+onclick="answer(this,'${o}')">
+
+${o}
+
+</button>
+
+`).join("")}
+
+</div>
+
+<div class="controls">
+
+<button class="control-btn secondary"
+onclick="speakWord()">
+
+🔊 发音
+
+</button>
+
+<button class="control-btn primary"
+onclick="nextRound()">
+
+下一题
+
+</button>
+
+</div>
+
+`;
+
+}
+
+function getWord(){
+
+if(
+wrongBook.length > 0 &&
+Math.random() < 0.35
+){
+
+return wrongBook[
+Math.floor(Math.random()*wrongBook.length)
+];
+
+}
+
+return words[
+Math.floor(Math.random()*words.length)
+];
+
+}
+
+function generateOptions(correct){
+
+let arr = [correct.meaning];
+
+while(arr.length < 4){
+
+let m =
+words[
+Math.floor(Math.random()*words.length)
+].meaning;
+
+if(!arr.includes(m)){
+arr.push(m);
+}
+
+}
+
+return shuffle(arr);
+
+}
+
+function answer(btn,text){
+
+const correct = currentWord.meaning;
+
+const buttons =
+document.querySelectorAll(".option-btn");
+
+buttons.forEach(b=>b.disabled = true);
+
+if(text === correct){
+
+btn.classList.add("correct");
+
+player.combo++;
+
+let damage =
+15 + player.combo * 2;
+
+enemy.hp -= damage;
+
+player.score += damage;
+
+showDamage(
+"-" + damage,
+"#22c55e"
+);
+
+if(player.combo >= 5){
+unlockAchievement("连击达人");
+}
+
+playVibrate([40]);
+
+}else{
+
+btn.classList.add("wrong");
+
+buttons.forEach(b=>{
+
+if(b.innerText === correct){
+
+b.classList.add("correct");
+
+}
+
+});
+
+player.combo = 0;
+
+player.hp -= 15;
+
+showDamage("-15","#ef4444");
+
+if(
+!wrongBook.find(
+w=>w.word === currentWord.word
+)
+){
+
+wrongBook.push(currentWord);
+
+localStorage.setItem(
+"wrongBook",
+JSON.stringify(wrongBook)
+);
+
+}
+
+renderWrongWords();
+
+playVibrate([100,50,100]);
+
+}
+
+if(enemy.hp <= 0){
+killEnemy();
+}
+
+if(player.hp <= 0){
+gameOver();
+}
+
+updateBars();
+updateStats();
+
+}
+
+function nextRound(){
+render();
+}
+
+function killEnemy(){
+
+player.kills++;
+player.floor++;
+
+enemy.maxHp += 20;
+enemy.hp = enemy.maxHp;
+
+const monsters = [
+
+{name:"单词恶龙",icon:"🐉"},
+{name:"语法幽灵",icon:"👻"},
+{name:"阅读魔像",icon:"🗿"},
+{name:"完形骑士",icon:"⚔️"},
+{name:"高考Boss",icon:"🔥"}
+
+];
+
+enemy = {
+
+...monsters[
+Math.floor(Math.random()*monsters.length)
+],
+
+hp:enemy.maxHp,
+maxHp:enemy.maxHp
+
+};
+
+player.hp =
+Math.min(
+player.maxHp,
+player.hp + 20
+);
+
+if(player.floor >= 10){
+unlockAchievement("地牢征服者");
+}
+
+render();
+
+}
+
+function gameOver(){
+
+gameArea.innerHTML = `
+
+<div style="text-align:center">
+
+<div style="font-size:80px;margin-bottom:15px">
+💀
+</div>
+
+<h1 style="margin-bottom:15px">
+挑战结束
+</h1>
+
+<p style="margin-bottom:10px">
+到达第 ${player.floor} 层
+</p>
+
+<p style="margin-bottom:10px">
+总分：${player.score}
+</p>
+
+<p style="margin-bottom:20px">
+击败怪物：${player.kills}
+</p>
+
+<button class="control-btn primary"
+onclick="restart()">
+
+重新开始
+
+</button>
+
+</div>
+
+`;
+
+}
+
+function restart(){
+
+player = {
+hp:100,
+maxHp:100,
+score:0,
+combo:0,
+floor:1,
+kills:0
+};
+
+enemy = {
+hp:100,
+maxHp:100,
+name:"史莱姆单词兽",
+icon:"👾"
+};
+
+render();
+updateStats();
+
+}
+
+function updateBars(){
+
+const php =
+(player.hp/player.maxHp)*100;
+
+const ehp =
+(enemy.hp/enemy.maxHp)*100;
+
+document.getElementById("playerHp")
+.style.width = php + "%";
+
+document.getElementById("enemyHp")
+.style.width = ehp + "%";
+
+document.getElementById("playerHpText")
+.innerText =
+`${player.hp} / ${player.maxHp}`;
+
+document.getElementById("enemyHpText")
+.innerText =
+`${enemy.hp} / ${enemy.maxHp}`;
+
+}
+
+function updateStats(){
+
+document.getElementById("score")
+.innerText = player.score;
+
+document.getElementById("combo")
+.innerText = player.combo;
+
+document.getElementById("floor")
+.innerText = player.floor;
+
+document.getElementById("kills")
+.innerText = player.kills;
+
+}
+
+function shuffle(arr){
+
+for(let i=arr.length-1;i>0;i--){
+
+const j =
+Math.floor(Math.random()*(i+1));
+
+[arr[i],arr[j]] =
+[arr[j],arr[i]];
+
+}
+
+return arr;
+
+}
+
+function speakWord(){
+
+const utter =
+new SpeechSynthesisUtterance(
+currentWord.word
+);
+
+utter.lang = "en-US";
+
+speechSynthesis.speak(utter);
+
+}
+
+function showDamage(text,color){
+
+const div =
+document.createElement("div");
+
+div.className = "damage";
+
+div.style.color = color;
+
+div.innerText = text;
+
+document.body.appendChild(div);
+
+setTimeout(()=>{
+div.remove();
+},1000);
+
+}
+
+function renderWrongWords(){
+
+const box =
+document.getElementById("wrongWords");
+
+if(wrongBook.length === 0){
+
+box.innerHTML = "暂无错词";
+
+return;
+
+}
+
+box.innerHTML =
+wrongBook.map(w=>`
+
+<div class="badge">
+
+${w.word}
+
+</div>
+
+`).join("");
+
+}
+
+function unlockAchievement(name){
+
+if(!achievements.includes(name)){
+
+achievements.push(name);
+
+localStorage.setItem(
+"achievements",
+JSON.stringify(achievements)
+);
+
+renderAchievements();
+
+}
+
+}
+
+function renderAchievements(){
+
+const box =
+document.getElementById("badges");
+
+if(achievements.length === 0){
+
+box.innerHTML = "暂无成就";
+
+return;
+
+}
+
+box.innerHTML =
+achievements.map(a=>`
+
+<div class="badge">
+
+🏆 ${a}
+
+</div>
+
+`).join("");
+
+}
+
+function getComboText(){
+
+if(player.combo >= 20){
+return "⚡ GODLIKE ⚡";
+}
+
+if(player.combo >= 10){
+return "🔥 AMAZING 🔥";
+}
+
+if(player.combo >= 5){
+return "💥 GREAT 💥";
+}
+
+if(player.combo >= 3){
+return "✨ NICE ✨";
+}
+
+return "";
+
+}
+
+function playVibrate(pattern){
+
+if(navigator.vibrate){
+navigator.vibrate(pattern);
+}
+
+}
+
+updateStats();
+
+</script>
+
+</body>
+</html>
